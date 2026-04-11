@@ -1,0 +1,1 @@
+﻿const mongoose = require("mongoose"); const SalleSchema = new mongoose.Schema({ nom: String, adresse: String, capaciteTotale: Number, planPlaces: Object }, { timestamps: true }); module.exports = mongoose.model("Salle", SalleSchema);
