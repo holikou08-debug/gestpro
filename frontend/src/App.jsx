@@ -7,6 +7,7 @@ import Produits from './pages/Produits';
 import Ventes from './pages/Ventes';
 import Commerciaux from './pages/Commerciaux';
 import Assistant from './pages/Assistant';
+import Analyse from './pages/Analyse';
 import Predictions from './pages/Predictions';
 
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
   { path:'/ventes', label:'Ventes', icon:'💰' },
   { path:'/commerciaux', label:'Commerciaux', icon:'🏆' },
   { path:'/predictions', label:'Predictions IA', icon:'🔮' },
+  { path:'/analyse', label:'Analyse', icon:'🔍' },
   { path:'/assistant', label:'Assistant IA', icon:'🤖' },
 ];
 
@@ -116,6 +118,7 @@ export default function App() {
             <Route path='/ventes' element={<Ventes/>}/>
             <Route path='/commerciaux' element={<Commerciaux/>}/>
             <Route path='/predictions' element={<Predictions/>}/>
+            <Route path='/analyse' element={<Analyse/>}/>
             <Route path='/assistant' element={<Assistant/>}/>
           </Routes>
         </div>
