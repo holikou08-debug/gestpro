@@ -10,6 +10,7 @@ export default function Ventes() {
   const [produits, setProduits] = useState([]);
   const [commerciaux, setCommerciaux] = useState([]);
   const [recherche, setRecherche] = useState('');
+  const [tri, setTri] = useState('recent');
   const [form, setForm] = useState({ client:'', produit:'', quantite:'', prixUnitaire:'', commercialId:'' });
 
   // Chargement des donnees au demarrage
@@ -21,11 +22,20 @@ export default function Ventes() {
   }, []);
 
   // Filtrage par recherche
-  const filtered = items.filter(i =>
+  const filtered = items
+  .filter(i =>
     i.client?.nom?.toLowerCase().includes(recherche.toLowerCase()) ||
     i.produit?.nom?.toLowerCase().includes(recherche.toLowerCase()) ||
     i.commercialId?.nom?.toLowerCase().includes(recherche.toLowerCase())
-  );
+  )
+  .sort((a,b) => {
+    if(tri==='client') return (a.client?.nom||'').localeCompare(b.client?.nom||'');
+    if(tri==='produit') return (a.produit?.nom||'').localeCompare(b.produit?.nom||'');
+    if(tri==='montant-desc') return (b.quantite*b.prixUnitaire) - (a.quantite*a.prixUnitaire);
+    if(tri==='montant-asc') return (a.quantite*a.prixUnitaire) - (b.quantite*b.prixUnitaire);
+    if(tri==='ancien') return new Date(a.date) - new Date(b.date);
+    return new Date(b.date) - new Date(a.date);
+  });
 
   // Calcul du CA total filtre
   const caTotal = filtered.reduce((s,v)=>s+(v.quantite*v.prixUnitaire),0);
@@ -92,6 +102,15 @@ export default function Ventes() {
             <h3 style={{color:'#1e1b4b',fontWeight:'700'}}>Liste des ventes ({filtered.length})</h3>
             <p style={{color:'#10b981',fontWeight:'700',fontSize:'0.9rem'}}>CA : {Math.round(caTotal).toLocaleString('fr')} FCFA</p>
           </div>
+          <select value={tri} onChange={e=>setTri(e.target.value)}
+            style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem'}}>
+            <option value="recent">Plus recent</option>
+            <option value="ancien">Plus ancien</option>
+            <option value="client">Client A-Z</option>
+            <option value="produit">Produit A-Z</option>
+            <option value="montant-desc">Montant decroissant</option>
+            <option value="montant-asc">Montant croissant</option>
+          </select>
           <input placeholder="🔍 Rechercher par client, produit, commercial..." value={recherche}
             onChange={e=>setRecherche(e.target.value)}
             style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem',width:'320px'}}/>

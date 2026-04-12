@@ -9,6 +9,7 @@ export default function Commerciaux() {
   const [ventes, setVentes] = useState([]);
   const [recherche, setRecherche] = useState('');
   const [filtreRegion, setFiltreRegion] = useState('');
+  const [tri, setTri] = useState('recent');
   const [form, setForm] = useState({ nom:'', region:'', objectifMensuel:'' });
 
   // Chargement des donnees au demarrage
@@ -27,10 +28,20 @@ export default function Commerciaux() {
   const regions = [...new Set(items.map(i=>i.region).filter(Boolean))];
 
   // Filtrage par recherche et region
-  const filtered = items.filter(i =>
+  const filtered = items
+  .filter(i =>
     i.nom?.toLowerCase().includes(recherche.toLowerCase()) &&
     (filtreRegion==='' || i.region===filtreRegion)
-  );
+  )
+  .sort((a,b) => {
+    if(tri==='nom') return (a.nom||'').localeCompare(b.nom||'');
+    if(tri==='nom-desc') return (b.nom||'').localeCompare(a.nom||'');
+    if(tri==='region') return (a.region||'').localeCompare(b.region||'');
+    if(tri==='objectif-desc') return b.objectifMensuel - a.objectifMensuel;
+    if(tri==='objectif-asc') return a.objectifMensuel - b.objectifMensuel;
+    if(tri==='ancien') return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 
   // Ajout d'un commercial
   const handleSubmit = async (e) => {
@@ -84,6 +95,16 @@ export default function Commerciaux() {
               style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem'}}>
               <option value="">Toutes regions</option>
               {regions.map(r=><option key={r} value={r}>{r}</option>)}
+            </select>
+            <select value={tri} onChange={e=>setTri(e.target.value)}
+              style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem'}}>
+              <option value="recent">Plus recent</option>
+              <option value="ancien">Plus ancien</option>
+              <option value="nom">Nom A-Z</option>
+              <option value="nom-desc">Nom Z-A</option>
+              <option value="region">Region</option>
+              <option value="objectif-desc">Objectif decroissant</option>
+              <option value="objectif-asc">Objectif croissant</option>
             </select>
             <input placeholder="🔍 Rechercher..." value={recherche} onChange={e=>setRecherche(e.target.value)}
               style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem',width:'220px'}}/>

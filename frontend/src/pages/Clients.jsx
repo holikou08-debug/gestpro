@@ -7,17 +7,27 @@ export default function Clients() {
   // Etat des clients et du formulaire
   const [items, setItems] = useState([]);
   const [recherche, setRecherche] = useState('');
+  const [tri, setTri] = useState('recent');
   const [form, setForm] = useState({ nom:'', email:'', telephone:'', ville:'', segment:'particulier' });
 
   // Chargement des clients au demarrage
   useEffect(() => { getClients().then(r => setItems(r.data)); }, []);
 
   // Filtrage par recherche en temps reel
-  const filtered = items.filter(i =>
+  const filtered = items
+  .filter(i =>
     i.nom?.toLowerCase().includes(recherche.toLowerCase()) ||
     i.email?.toLowerCase().includes(recherche.toLowerCase()) ||
     i.ville?.toLowerCase().includes(recherche.toLowerCase())
-  );
+  )
+  .sort((a,b) => {
+    if(tri==='nom') return (a.nom||'').localeCompare(b.nom||'');
+    if(tri==='nom-desc') return (b.nom||'').localeCompare(a.nom||'');
+    if(tri==='ville') return (a.ville||'').localeCompare(b.ville||'');
+    if(tri==='segment') return (a.segment||'').localeCompare(b.segment||'');
+    if(tri==='ancien') return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 
   // Ajout d'un client
   const handleSubmit = async (e) => {
@@ -70,6 +80,15 @@ export default function Clients() {
       <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1rem'}}>
           <h3 style={{color:'#1e1b4b',fontWeight:'700'}}>Liste des clients ({filtered.length})</h3>
+          <select value={tri} onChange={e=>setTri(e.target.value)}
+            style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem'}}>
+            <option value="recent">Plus recent</option>
+            <option value="ancien">Plus ancien</option>
+            <option value="nom">Nom A-Z</option>
+            <option value="nom-desc">Nom Z-A</option>
+            <option value="ville">Ville</option>
+            <option value="segment">Segment</option>
+          </select>
           <input placeholder="🔍 Rechercher par nom, email, ville..." value={recherche}
             onChange={e=>setRecherche(e.target.value)}
             style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem',width:'300px'}}/>

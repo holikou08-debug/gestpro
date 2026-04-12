@@ -8,17 +8,29 @@ export default function Produits() {
   const [items, setItems] = useState([]);
   const [recherche, setRecherche] = useState('');
   const [filtreCategorie, setFiltreCategorie] = useState('');
+  const [tri, setTri] = useState('recent');
   const [form, setForm] = useState({ nom:'', categorie:'', prixUnitaire:'', stock:'', fournisseur:'' });
 
   // Chargement des produits au demarrage
   useEffect(() => { getProduits().then(r => setItems(r.data)); }, []);
 
   // Filtrage par recherche et categorie
-  const filtered = items.filter(i =>
+  const filtered = items
+  .filter(i =>
     (i.nom?.toLowerCase().includes(recherche.toLowerCase()) ||
     i.fournisseur?.toLowerCase().includes(recherche.toLowerCase())) &&
     (filtreCategorie==='' || i.categorie===filtreCategorie)
-  );
+  )
+  .sort((a,b) => {
+    if(tri==='nom') return (a.nom||'').localeCompare(b.nom||'');
+    if(tri==='nom-desc') return (b.nom||'').localeCompare(a.nom||'');
+    if(tri==='prix-asc') return a.prixUnitaire - b.prixUnitaire;
+    if(tri==='prix-desc') return b.prixUnitaire - a.prixUnitaire;
+    if(tri==='stock') return b.stock - a.stock;
+    if(tri==='categorie') return (a.categorie||'').localeCompare(b.categorie||'');
+    if(tri==='ancien') return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 
   // Categories uniques pour le filtre
   const categories = [...new Set(items.map(i=>i.categorie).filter(Boolean))];
@@ -76,6 +88,17 @@ export default function Produits() {
               style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem'}}>
               <option value="">Toutes categories</option>
               {categories.map(c=><option key={c} value={c}>{c}</option>)}
+            </select>
+            <select value={tri} onChange={e=>setTri(e.target.value)}
+              style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem'}}>
+              <option value="recent">Plus recent</option>
+              <option value="ancien">Plus ancien</option>
+              <option value="nom">Nom A-Z</option>
+              <option value="nom-desc">Nom Z-A</option>
+              <option value="prix-asc">Prix croissant</option>
+              <option value="prix-desc">Prix decroissant</option>
+              <option value="stock">Stock</option>
+              <option value="categorie">Categorie</option>
             </select>
             <input placeholder="🔍 Rechercher..." value={recherche} onChange={e=>setRecherche(e.target.value)}
               style={{padding:'0.7rem 1rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.9rem',width:'220px'}}/>
