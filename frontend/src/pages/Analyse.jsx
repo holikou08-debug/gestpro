@@ -1,8 +1,9 @@
+// PAGE ANALYSE - Interface d'analyse avec requetes parametrables
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import axios from 'axios';
 
-const API = 'https://gestpro-backend.onrender.com/api';
+const API = 'http://localhost:5000/api';
 const COLORS = ['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444'];
 
 export default function Analyse() {
@@ -12,93 +13,90 @@ export default function Analyse() {
   const [conversion, setConversion] = useState(null);
   const [evolution, setEvolution] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ debut:'', fin:'', categorie:'', region:'' });
+  const [chartKey, setChartKey] = useState(0);
+  const [debut, setDebut] = useState('');
+  const [fin, setFin] = useState('');
+  const [categorie, setCategorie] = useState('');
+  const [region, setRegion] = useState('');
 
-  useEffect(() => {
-    chargerDonnees();
-  }, []);
+  useEffect(() => { chargerDonnees('','','',''); }, []);
 
-  const chargerDonnees = async () => {
+  const chargerDonnees = async (d, f, cat, reg) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if(filters.debut) params.append('debut', filters.debut);
-      if(filters.fin) params.append('fin', filters.fin);
-      if(filters.categorie) params.append('categorie', filters.categorie);
-      if(filters.region) params.append('region', filters.region);
+      let params = '';
+      if(d) params += 'debut='+d+'&';
+      if(f) params += 'fin='+f+'&';
+      if(cat) params += 'categorie='+cat+'&';
+      if(reg) params += 'region='+reg+'&';
 
       const [caRes, topRes, panierRes, convRes, evolRes] = await Promise.all([
-        axios.get(`${API}/analytics/ca?${params}`),
-        axios.get(`${API}/analytics/top-produits?${params}`),
-        axios.get(`${API}/analytics/panier-segment`),
-        axios.get(`${API}/analytics/conversion`),
-        axios.get(`${API}/analytics/evolution`),
+        axios.get(API+'/analytics/ca?'+params),
+        axios.get(API+'/analytics/top-produits?'+params),
+        axios.get(API+'/analytics/panier-segment'),
+        axios.get(API+'/analytics/conversion'),
+        axios.get(API+'/analytics/evolution?'+params),
       ]);
       setCA(caRes.data);
       setTopProduits(topRes.data);
       setPanierSegment(panierRes.data);
       setConversion(convRes.data);
       setEvolution(evolRes.data);
+      setChartKey(k=>k+1);
     } catch(err) { console.error(err); }
     setLoading(false);
   };
 
+  const handleAnalyser = () => chargerDonnees(debut, fin, categorie, region);
+
   return (
     <div style={{padding:'2rem',background:'#f8fafc',minHeight:'100vh'}}>
       <div style={{marginBottom:'2rem'}}>
-        <h1 style={{fontSize:'1.8rem',fontWeight:'800',color:'#1e1b4b'}}>Interface d analyse</h1>
+        <h1 style={{fontSize:'1.8rem',fontWeight:'800',color:'#1e1b4b'}}>🔍 Interface d analyse</h1>
         <p style={{color:'#9ca3af'}}>Requetes parametrables sur vos donnees</p>
       </div>
 
       {/* Filtres */}
       <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)',marginBottom:'2rem'}}>
-        <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1rem'}}>🔍 Filtres</h3>
+        <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1rem'}}>🎛️ Filtres de recherche</h3>
         <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'1rem',marginBottom:'1rem'}}>
           <div>
-            <label style={{fontSize:'0.8rem',color:'#6b7280',fontWeight:'600'}}>Date debut</label>
-            <input type="date" value={filters.debut} onChange={e=>setFilters({...filters,debut:e.target.value})}
-              style={{width:'100%',padding:'0.6rem',borderRadius:'0.5rem',border:'2px solid #e5e7eb',fontSize:'0.85rem',marginTop:'0.3rem'}}/>
+            <label style={{fontSize:'0.8rem',color:'#6b7280',fontWeight:'600',display:'block',marginBottom:'0.3rem'}}>Date debut</label>
+            <input type="date" value={debut} onChange={e=>setDebut(e.target.value)}
+              style={{width:'100%',padding:'0.7rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.85rem'}}/>
           </div>
           <div>
-            <label style={{fontSize:'0.8rem',color:'#6b7280',fontWeight:'600'}}>Date fin</label>
-            <input type="date" value={filters.fin} onChange={e=>setFilters({...filters,fin:e.target.value})}
-              style={{width:'100%',padding:'0.6rem',borderRadius:'0.5rem',border:'2px solid #e5e7eb',fontSize:'0.85rem',marginTop:'0.3rem'}}/>
+            <label style={{fontSize:'0.8rem',color:'#6b7280',fontWeight:'600',display:'block',marginBottom:'0.3rem'}}>Date fin</label>
+            <input type="date" value={fin} onChange={e=>setFin(e.target.value)}
+              style={{width:'100%',padding:'0.7rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.85rem'}}/>
           </div>
           <div>
-            <label style={{fontSize:'0.8rem',color:'#6b7280',fontWeight:'600'}}>Categorie</label>
-            <select value={filters.categorie} onChange={e=>setFilters({...filters,categorie:e.target.value})}
-              style={{width:'100%',padding:'0.6rem',borderRadius:'0.5rem',border:'2px solid #e5e7eb',fontSize:'0.85rem',marginTop:'0.3rem'}}>
+            <label style={{fontSize:'0.8rem',color:'#6b7280',fontWeight:'600',display:'block',marginBottom:'0.3rem'}}>Categorie</label>
+            <select value={categorie} onChange={e=>setCategorie(e.target.value)}
+              style={{width:'100%',padding:'0.7rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.85rem'}}>
               <option value="">Toutes</option>
-              <option value="Electronique">Electronique</option>
-              <option value="Tissus">Tissus</option>
-              <option value="Alimentation">Alimentation</option>
-              <option value="Sport">Sport</option>
-              <option value="Maison">Maison</option>
-              <option value="Beaute">Beaute</option>
-              <option value="Agriculture">Agriculture</option>
-              <option value="Artisanat">Artisanat</option>
+              {['Electronique','Tissus','Alimentation','Sport','Maison','Beaute','Agriculture','Artisanat'].map(c=><option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div>
-            <label style={{fontSize:'0.8rem',color:'#6b7280',fontWeight:'600'}}>Region</label>
-            <select value={filters.region} onChange={e=>setFilters({...filters,region:e.target.value})}
-              style={{width:'100%',padding:'0.6rem',borderRadius:'0.5rem',border:'2px solid #e5e7eb',fontSize:'0.85rem',marginTop:'0.3rem'}}>
+            <label style={{fontSize:'0.8rem',color:'#6b7280',fontWeight:'600',display:'block',marginBottom:'0.3rem'}}>Region</label>
+            <select value={region} onChange={e=>setRegion(e.target.value)}
+              style={{width:'100%',padding:'0.7rem',borderRadius:'0.75rem',border:'2px solid #e5e7eb',fontSize:'0.85rem'}}>
               <option value="">Toutes</option>
-              <option value="Lome">Lome</option>
-              <option value="Sokode">Sokode</option>
-              <option value="Kara">Kara</option>
-              <option value="Atakpame">Atakpame</option>
-              <option value="Dapaong">Dapaong</option>
-              <option value="Tsevie">Tsevie</option>
-              <option value="Aneho">Aneho</option>
-              <option value="Bassar">Bassar</option>
+              {['Lome','Sokode','Kara','Atakpame','Dapaong','Tsevie','Aneho','Bassar'].map(r=><option key={r} value={r}>{r}</option>)}
             </select>
           </div>
         </div>
-        <button onClick={chargerDonnees} disabled={loading}
-          style={{padding:'0.75rem 2rem',background:'linear-gradient(135deg,#6366f1,#8b5cf6)',color:'white',border:'none',borderRadius:'0.75rem',cursor:'pointer',fontWeight:'600',fontSize:'0.9rem'}}>
-          {loading ? 'Chargement...' : '🔍 Analyser'}
-        </button>
+        <div style={{display:'flex',gap:'0.75rem'}}>
+          <button onClick={handleAnalyser} disabled={loading}
+            style={{padding:'0.75rem 2rem',background:'linear-gradient(135deg,#6366f1,#8b5cf6)',color:'white',border:'none',borderRadius:'0.75rem',cursor:'pointer',fontWeight:'600',fontSize:'0.9rem'}}>
+            {loading ? '⏳ Chargement...' : '🔍 Analyser'}
+          </button>
+          <button onClick={()=>{ setDebut(''); setFin(''); setCategorie(''); setRegion(''); chargerDonnees('','','',''); }}
+            style={{padding:'0.75rem 1.5rem',background:'#f3f4f6',color:'#6b7280',border:'none',borderRadius:'0.75rem',cursor:'pointer',fontWeight:'600'}}>
+            🔄 Reinitialiser
+          </button>
+        </div>
       </div>
 
       {/* KPIs CA */}
@@ -121,58 +119,64 @@ export default function Analyse() {
       )}
 
       {/* Evolution 12 mois */}
-      <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)',marginBottom:'1.5rem'}}>
-        <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1.5rem'}}>📈 Evolution mensuelle sur 12 mois</h3>
-        <ResponsiveContainer width="100%" height={280}>
-          <LineChart data={evolution}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0"/>
-            <XAxis dataKey="mois" tick={{fill:'#9ca3af',fontSize:11}}/>
-            <YAxis tick={{fill:'#9ca3af',fontSize:11}} tickFormatter={v=>Math.round(v/1000)+'K'}/>
-            <Tooltip formatter={v=>[v.toLocaleString('fr')+' FCFA','CA']}/>
-            <Line type="monotone" dataKey="ca" stroke="#6366f1" strokeWidth={3} dot={{fill:'#6366f1',r:4}}/>
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {evolution.length>0 && (
+        <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)',marginBottom:'1.5rem'}}>
+          <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1.5rem'}}>📈 Evolution mensuelle sur 12 mois</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart key={chartKey} data={evolution}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0"/>
+              <XAxis dataKey="mois" tick={{fill:'#9ca3af',fontSize:11}}/>
+              <YAxis tick={{fill:'#9ca3af',fontSize:11}} tickFormatter={v=>Math.round(v/1000)+'K'}/>
+              <Tooltip formatter={v=>[v.toLocaleString('fr')+' FCFA','CA']}/>
+              <Line type="monotone" dataKey="ca" stroke="#6366f1" strokeWidth={3} dot={{fill:'#6366f1',r:4}}/>
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1.5rem',marginBottom:'1.5rem'}}>
         {/* Top 10 produits */}
-        <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)'}}>
-          <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1.5rem'}}>🏆 Top 10 produits les plus vendus</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={topProduits} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0"/>
-              <XAxis type="number" tick={{fill:'#9ca3af',fontSize:11}}/>
-              <YAxis type="category" dataKey="nom" tick={{fill:'#6b7280',fontSize:11}} width={100}/>
-              <Tooltip formatter={v=>[v+' unites','Quantite']}/>
-              <Bar dataKey="quantite" radius={[0,6,6,0]}>
-                {topProduits.map((_,i)=><Cell key={i} fill={COLORS[i%COLORS.length]}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {topProduits.length>0 && (
+          <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)'}}>
+            <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1.5rem'}}>🏆 Top 10 produits les plus vendus</h3>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={topProduits} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0"/>
+                <XAxis type="number" tick={{fill:'#9ca3af',fontSize:11}}/>
+                <YAxis type="category" dataKey="nom" tick={{fill:'#6b7280',fontSize:11}} width={100}/>
+                <Tooltip formatter={v=>[v+' unites','Quantite']}/>
+                <Bar dataKey="quantite" radius={[0,6,6,0]}>
+                  {topProduits.map((_,i)=><Cell key={i} fill={COLORS[i%COLORS.length]}/>)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
 
         {/* Panier moyen par segment */}
-        <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)'}}>
-          <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1.5rem'}}>👥 Panier moyen par segment</h3>
-          <div style={{display:'flex',flexDirection:'column',gap:'1rem',marginBottom:'1.5rem'}}>
-            {panierSegment.map((s,i)=>(
-              <div key={i} style={{padding:'1rem',borderRadius:'0.75rem',background:COLORS[i]+'15',border:'1px solid '+COLORS[i]+'30'}}>
-                <div style={{display:'flex',justifyContent:'space-between',marginBottom:'0.5rem'}}>
-                  <span style={{fontWeight:'700',color:'#1e1b4b',textTransform:'capitalize'}}>{s.segment}</span>
-                  <span style={{fontWeight:'800',color:COLORS[i]}}>{s.panierMoyen.toLocaleString('fr')} FCFA</span>
+        {panierSegment.length>0 && (
+          <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)'}}>
+            <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1.5rem'}}>👥 Panier moyen par segment</h3>
+            <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+              {panierSegment.map((s,i)=>(
+                <div key={i} style={{padding:'1rem',borderRadius:'0.75rem',background:COLORS[i]+'15',border:'1px solid '+COLORS[i]+'30'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',marginBottom:'0.5rem'}}>
+                    <span style={{fontWeight:'700',color:'#1e1b4b',textTransform:'capitalize'}}>{s.segment}</span>
+                    <span style={{fontWeight:'800',color:COLORS[i]}}>{s.panierMoyen.toLocaleString('fr')} FCFA</span>
+                  </div>
+                  <div style={{fontSize:'0.8rem',color:'#6b7280'}}>{s.nbVentes} ventes — CA : {s.totalCA.toLocaleString('fr')} FCFA</div>
                 </div>
-                <div style={{fontSize:'0.8rem',color:'#6b7280'}}>{s.nbVentes} ventes — CA total : {s.totalCA.toLocaleString('fr')} FCFA</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Taux de conversion */}
       {conversion && (
         <div style={{background:'white',borderRadius:'1.2rem',padding:'1.5rem',boxShadow:'0 4px 20px rgba(0,0,0,0.06)'}}>
           <h3 style={{color:'#1e1b4b',fontWeight:'700',marginBottom:'1.5rem'}}>🔄 Taux de conversion clients</h3>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'1rem'}}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'1rem',marginBottom:'1rem'}}>
             {[
               ['Total clients',conversion.total,'#6366f1'],
               ['Clients actifs',conversion.nbActifs,'#10b981'],
@@ -185,12 +189,11 @@ export default function Analyse() {
               </div>
             ))}
           </div>
-          <div style={{marginTop:'1rem',background:'#f8fafc',borderRadius:'0.75rem',padding:'1rem'}}>
-            <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.5rem'}}>
-              <div style={{height:'12px',background:'#10b981',borderRadius:'6px',width:conversion.tauxConversion+'%',transition:'width 1s ease'}}></div>
-              <span style={{fontSize:'0.8rem',color:'#10b981',fontWeight:'700'}}>{conversion.tauxConversion}% actifs</span>
+          <div style={{background:'#f8fafc',borderRadius:'0.75rem',padding:'1rem'}}>
+            <div style={{height:'12px',background:'#e5e7eb',borderRadius:'6px',overflow:'hidden'}}>
+              <div style={{height:'100%',width:conversion.tauxConversion+'%',background:'linear-gradient(135deg,#10b981,#059669)',borderRadius:'6px',transition:'width 1s ease'}}></div>
             </div>
-            <div style={{fontSize:'0.8rem',color:'#6b7280'}}>Un client est considere inactif sans achat depuis 3 mois</div>
+            <div style={{fontSize:'0.8rem',color:'#6b7280',marginTop:'0.5rem'}}>Un client est inactif sans achat depuis 3 mois</div>
           </div>
         </div>
       )}
