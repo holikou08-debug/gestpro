@@ -9,8 +9,8 @@ export default function Predictions() {
 
   useEffect(() => {
     Promise.all([
-      axios.get('http://localhost:5000/api/analytics/predictions'),
-      axios.get('http://localhost:5000/api/analytics/segmentation')
+      axios.get('https://gestpro-backend.onrender.com/api/analytics/predictions'),
+      axios.get('https://gestpro-backend.onrender.com/api/analytics/segmentation')
     ]).then(([p,s]) => { setData(p.data); setSeg(s.data); setLoading(false); })
      .catch(() => setLoading(false));
   }, []);

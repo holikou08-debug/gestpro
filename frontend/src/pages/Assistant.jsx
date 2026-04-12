@@ -24,7 +24,7 @@ export default function Assistant() {
         'Produits: '+p.data.length+', Commerciaux: '+com.data.length+', Evenements: '+e.data.length+'. '+
         (topProduit ? 'Produit le plus vendu: '+topProduit[0]+' ('+topProduit[1]+' unites). ' : '')+
         'Reponds en francais, de facon claire et professionnelle. Donne des conseils concrets adaptes au marche togolais.';
-      const res = await axios.post('http://localhost:5000/api/ia/chat',{ message: text, context });
+      const res = await axios.post('https://gestpro-backend.onrender.com/api/ia/chat',{ message: text, context });
       setMessages(m=>[...m,{role:'assistant',content:res.data.reply}]);
     } catch(err) {
       setMessages(m=>[...m,{role:'assistant',content:'⚠️ Erreur: '+err.message}]);
