@@ -1,3 +1,6 @@
+// ROUTES ANALYTICS - Analyses et predictions ML
+// Regression lineaire pour previsions de ventes
+// Segmentation clients VIP/Actifs/Risque/Perdus
 const router = require('express').Router();
 const Vente = require('../models/Vente');
 router.get('/predictions', async (req, res) => {

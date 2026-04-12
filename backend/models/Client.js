@@ -1,1 +1,3 @@
+// MODELE CLIENT - Represente un client de la plateforme GestPro
+// Utilise pour la billetterie et les ventes
 ﻿const mongoose = require("mongoose"); const ClientSchema = new mongoose.Schema({ nom: String, email: String, telephone: String, ville: String, segment: { type: String, enum: ["particulier", "professionnel"], default: "particulier" }, newsletter: { type: Boolean, default: false }, dateInscription: { type: Date, default: Date.now } }, { timestamps: true }); module.exports = mongoose.model("Client", ClientSchema);

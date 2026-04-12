@@ -1,3 +1,5 @@
+// ROUTES IA - Assistant intelligent base sur les donnees
+// Analyse automatique des ventes, clients et produits
 const router = require('express').Router();
 const Vente = require('../models/Vente');
 const Client = require('../models/Client');

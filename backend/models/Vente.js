@@ -1,1 +1,3 @@
+// MODELE VENTE - Enregistre chaque transaction commerciale
+// Reference client, produit et commercial
 ﻿const mongoose = require("mongoose"); const VenteSchema = new mongoose.Schema({ date: { type: Date, default: Date.now }, client: { type: mongoose.Schema.Types.ObjectId, ref: "Client" }, produit: { type: mongoose.Schema.Types.ObjectId, ref: "Produit" }, quantite: Number, prixUnitaire: Number, commercialId: { type: mongoose.Schema.Types.ObjectId, ref: "Commercial" } }, { timestamps: true }); VenteSchema.index({ date: 1 }); VenteSchema.index({ commercialId: 1 }); module.exports = mongoose.model("Vente", VenteSchema);

@@ -1,1 +1,3 @@
+// MODELE EVENEMENT - Spectacles et concerts geres par la plateforme
+// Contient artistes, salle, capacite et prix par categorie
 ﻿const mongoose = require("mongoose"); const EvenementSchema = new mongoose.Schema({ titre: String, description: String, artistes: [String], date: Date, heure: String, salle: { type: mongoose.Schema.Types.ObjectId, ref: "Salle" }, capacite: Number, prix: [{ categorie: String, montant: Number }] }, { timestamps: true }); module.exports = mongoose.model("Evenement", EvenementSchema);
