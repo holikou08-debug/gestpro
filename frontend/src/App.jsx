@@ -12,7 +12,6 @@ import Predictions from './pages/Predictions';
 
 const navItems = [
   { path:'/', label:'Tableau de bord', icon:'📊' },
-  { path:'/evenements', label:'Evenements', icon:'🎭' },
   { path:'/clients', label:'Clients', icon:'👥' },
   { path:'/produits', label:'Produits', icon:'📦' },
   { path:'/ventes', label:'Ventes', icon:'💰' },
@@ -112,7 +111,6 @@ export default function App() {
         <div style={{marginLeft:'260px',flex:1,minHeight:'100vh'}}>
           <Routes>
             <Route path='/' element={<Accueil/>}/>
-            <Route path='/evenements' element={<Evenements/>}/>
             <Route path='/clients' element={<Clients/>}/>
             <Route path='/produits' element={<Produits/>}/>
             <Route path='/ventes' element={<Ventes/>}/>
