@@ -1,3 +1,6 @@
+// APP.JSX - Point dentree principal du frontend GestPro
+// Contient la navigation sidebar et les routes React
+// Technologies : React, React Router DOM
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Accueil from './pages/Accueil';

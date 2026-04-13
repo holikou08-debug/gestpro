@@ -1,3 +1,6 @@
+// PREDICTIONS.JSX - Predictions IA par regression lineaire
+// Predit les ventes sur 3 mois a partir de lhistorique
+// Inclut segmentation clients VIP/Actifs/Risque/Perdus
 import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import axios from 'axios';

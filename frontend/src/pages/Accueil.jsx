@@ -1,3 +1,9 @@
+// ACCUEIL.JSX - Tableau de bord principal
+// Affiche les KPIs en temps reel et les graphiques
+// Graphiques : LineChart, BarChart, PieChart (Recharts)
+// ACCUEIL.JSX - Tableau de bord principal
+// Affiche les KPIs en temps reel et les graphiques
+// Graphiques : LineChart, BarChart, PieChart (Recharts)
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { getVentes, getClients, getProduits, getCommerciaux, getEvenements } from '../api';

@@ -1,3 +1,6 @@
+// ASSISTANT.JSX - Assistant IA intelligent
+// Analyse les donnees en temps reel et repond aux questions
+// Fonctionne sans API externe - analyse directe des donnees MongoDB
 import React, { useState, useRef, useEffect } from 'react';
 import { getVentes, getClients, getProduits, getCommerciaux, getEvenements } from '../api';
 import axios from 'axios';
