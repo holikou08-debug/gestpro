@@ -93,7 +93,7 @@ function Sidebar() {
           <div style={{width:'8px',height:'8px',background:'#10b981',borderRadius:'50%',boxShadow:'0 0 8px #10b981'}}></div>
           <span style={{color:'#a5b4fc',fontSize:'0.75rem',fontWeight:'600'}}>Systeme actif</span>
         </div>
-        <div style={{color:'rgba(255,255,255,0.5)',fontSize:'0.7rem'}}>Fait par le Groupe 1</div>
+        <div style={{color:'rgba(255,255,255,0.5)',fontSize:'0.7rem'}}>Fait par le Groupe 1 - M1SI</div>
       </div>
     </div>
   );
